@@ -8,7 +8,7 @@
 
 			<!-- PAGE HEADER -->
 			<i class="fa-fw fa fa-home"></i>
-				Page Header
+				Page Header test
 			<span>>
 				Subtitle
 			</span>
