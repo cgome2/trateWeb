@@ -42,6 +42,7 @@
 		<!-- JQUERY VALIDATE -->
 		<script src="<?php echo ASSETS_URL; ?>/js/plugin/jquery-validate/jquery.validate.min.js"></script>
 
+
 		<!-- JQUERY MASKED INPUT -->
 		<script src="<?php echo ASSETS_URL; ?>/js/plugin/masked-input/jquery.maskedinput.min.js"></script>
 
@@ -69,10 +70,5 @@
 		<!-- MAIN APP JS FILE -->
 		<script src="<?php echo ASSETS_URL; ?>/js/app.js"></script>		
 
-		<!-- ENHANCEMENT PLUGINS : NOT A REQUIREMENT -->
-		<!-- Voice command : plugin -->
-		<script src="<?php echo ASSETS_URL; ?>/js/speech/voicecommand.min.js"></script>		
-
-		<!-- SmartChat UI : plugin -->
-		<script src="<?php echo ASSETS_URL; ?>/js/smart-chat-ui/smart.chat.ui.min.js"></script>
-		<script src="<?php echo ASSETS_URL; ?>/js/smart-chat-ui/smart.chat.manager.min.js"></script>
+<!-- TIMEPICKER -->
+		<script src="js/plugin/bootstrap-timepicker/bootstrap-timepicker.min.js"></script>>

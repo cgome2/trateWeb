@@ -11,138 +11,24 @@ use \Common\HTMLIndent;
 if ($_SERVER['REQUEST_METHOD'] =="POST")
 {
 
-	if(isset($_POST['remisionesTable_length'])) unset($_POST['remisionesTable_length']);
-	
-	foreach($_POST as $key=>$value)
-	{
-	if(substr($key,0,4) =="jqg_" || substr($key,-7) =="_length")
-	unset($_POST[$key]);
-	}
-	// filtramos campos innesesarios
-	$id = $_GET['id'];
-
-	$descargas = array();
-	$dd = $_POST['descargas'];
-	$d = json_decode(base64_decode($_POST['descargas']));
-	foreach($d as $dt)	
-	{
-		array_push($descargas,$dt->id);
-	}
-	$descargas = implode($descargas,",");
-	unset($_POST['descargas']);
-	$lg = $_POST['litrosGalones'];
-	$td = $_POST['tipoDocumento'];
-
-	if($td == "1")
-	{
-		$litros = $_POST['volumenFactura'];
-		if($lg == 2) $litros = $litros * 3.78541;
-		// insertamos en tabla de facturas
-		$f = $_POST['folioFactura'];
-		if(rquery("select count(*) from facturas where folio = '$f'") == 0)
-		{
-		$idf = iquery("insert into facturas(folio) values('$f')");
-		$_POST['idfacturas'] = $idf;
-		}
-		else
-		{
- 			$vf = rquery("select idfacturas from facturas where folio = '$f'");
- 			$vd = rquery("select idfacturas from documentos where iddocumentos = '$id'");
-			if($vd != $vf)
-			{
-			echo"
-				<script>
-					$.smallBox({
-						title : \"Alerta de validacion\",
-						content : \"<i class='fa fa-clock-o'></i> <i>El folio de factura $f ya esta en uso $id $idf</i>\",
-						color : \"#C46A69\",
-						iconSmall : \"fa fa-times fa-2x fadeInRight animated\",
-						timeout : 4000
-					});
-			</script>
-			";
-			exit;
-			}
-		}
+// print_r($_POST);
 
 
-	}
-	else
-	{
-		$litros = $_POST['volumenRemision'];
-		if($lg ==2) $litros = $litros * 3.78541;
-		// insertamos en tabla de remisiones
-		$f = $_POST['folioRemision'];
-		if(rquery("select count(*) from remisiones where folio = '$f'") == 0)
-		{
-		$idf = iquery("insert into remisiones(folio) values('$f')");
-		$_POST['idremisiones'] = $idf;
-		}
-		
-
-	}
-
-	
 	$leyenda = "<strong>Datos guardados</strong> Espere un momento ...";
-	$nv = "";
-	$_POST['litros'] = $litros;
-	if($id != "")
-	{
-	# analizamos los permisos
-	// if($permisos['docs'] == "20000")
-	// {
-	// $_POST['usuario'] = $_SESSION['loginHO'];
-	// $_POST['fcap'] = date('Y-m-d H:i:s');
-	// $_POST['ip'] =  $_SERVER['REMOTE_ADDR'];
-	// $_POST['descargas'] = $dd;;
-	// $_POST['iddocumentos'] = $id;
-	// $_POST['remisiones'] = $remi;
-    // $r = i_post("documentosAudit");
-	// $leyenda  ="<strong>Solicitud de cambios almacenada correctamente</strong> Espere un momento ... ";
-	// $nv ="1";
-	// }
-	// else //if($permisos['docs'] == "3")
-	// {
-    $r = e_post("documentos",$id);
-	// }
-    }
-	else
-	{
-	$_POST['usuario'] = $_SESSION['loginHO'];
-	$_POST['fcap'] = date('Y-m-d H:i:s');
-	$_POST['ip'] =  $_SERVER['REMOTE_ADDR'];
-	$r = i_post("documentos");
-	$id = $r;
-	}
-	
-	if(isset($dt) && $nv == "")
-	{//? si mandaron remisiones las procesamos
-	iquery("update documentos set iddocumentosPadre = null where iddocumentosPadre ='$id'");
-			foreach($dt as $rs)
-			{
-				$idd = $rs['id'];
-				$vf = $rs['vfactura'];
-				$ppg = $rs['pxg'];
-				$queryup ="update documentos set volumenFacturado = '$vf', ppg='$ppg', iddocumentosPadre ='$id' where iddocumentos ='$idd'";
-				iquery($queryup);
-				
-			}
-	}
-    if(is_numeric($r))
-    {
-	if( $nv == ""){
-	// guardamos descargas.
-	iquery("update descargas set iddocumentos = null where iddocumentos = $id");
 
-	iquery("update descargas set iddocumentos = '$id' where iddescargas in($descargas)");
-	}
-    $_ui->print_alert($leyenda, 'success');
-    $_ui->href("#ajax/documentos.php");
-}
-else
-{
-    $_ui->print_alert("<strong>Excepcion de Mysql :</strong> $r", 'danger');
-}
+#    $_ui->print_alert("<strong>Excepcion de Mysql :</strong> $r", 'danger');
+$fecha = fechaest($_POST['fecha']);
+$fecha = date('d/m/y',strtotime($fecha));
+$hora = substr($_POST['hora'],0,5);
+$serie = $_POST['serie'];
+$sello = $_POST['sello'];
+$referencia = $_POST['referencia'];
+$cmd = "/usr/local/orpak/perl/Trate/bin/valida_factura_trate.pl $fecha  $referencia $serie";
+$response = shell_exec($cmd);
+$_ui->print_alert($cmd .':<br>' . $response, 'success');
+
+// Y-m-d H:m
+// FECHA referencia serie
 exit;
 
 }
@@ -185,19 +71,54 @@ input:required:invalid:hover {
                 // SmartForm layout
 				$fields = array(
 
-					
+                        'descargas' => array(
+						'type' => 'hidden', // or FormField::FORM_FIELD_INPUT
+						'col' => 3,
+						'properties' => array(
+							'id' => 'descargas',
+							'label' => 'descargas',
+                            'value' => $descargas
+						)
+					),
+					'fecha' => array(
+						'type' => 'input', // or FormField::FORM_FIELD_INPUT
+						'col' => 3,
+						'properties' => array(
+							'id' => 'fecha',
+							'label' => 'Fecha Documento',
+							'icon' => 'fa-calendar',
+							'icon_append' => true,
+                            'value' => date('d/m/Y'),
+                            'readonly' => true,
+							'attr' => array("data-dateformat='dd/mm/yy' readonly='true'")
+
+						)
+					),
+					'hora' => array(
+						'type' => 'input', // or FormField::FORM_FIELD_INPUT
+						'col' => 3,
+						'properties' => array(
+							'id' => 'hora',
+							'label' => 'Hora Documento',
+							'icon' => 'fa-clock-o',
+							'icon_append' => true,
+                            'value' => date('H:i:s'),
+                            'type'=>'time'
+						)
+					),
+
 					'costo_esp' => array(
 						'type' => 'input',
 						'col' => 2 ,
 						'properties' => array(
-						'label' => 'Costo Esperado $',
+						'label' => 'Costo Esp. $',
 						'id' => 'costo_esp',
 						'attr' => array("required maxlength='10'")
                         )
 					),
 						'litros_esp' => array(
 						'type' => 'input',
-						'col' => 3 ,
+						'col' => 2 ,
 						'properties' => array(
 							'id' => 'litros_esp',
 							'label' => 'Litros Esperados' ,
@@ -206,7 +127,7 @@ input:required:invalid:hover {
 					),
 						'sello' => array(
 						'type' => 'input',
-						'col' => 2 ,
+						'col' => 3 ,
 						'properties' => array(
 							'label' => 'Sello ',
 							'id' => 'sello',
@@ -215,10 +136,10 @@ input:required:invalid:hover {
 					),
                     'referencia' => array(
 						'type' => 'input',
-						'col' => 2 ,
+						'col' => 3 ,
 						'properties' => array(
 							'label' => 'Referencia ',
-							'id' => 'referencia',
+							'id' => 'Referencia',
 							'attr' => array("required maxlength='10'")
                         )
 					),
@@ -226,7 +147,7 @@ input:required:invalid:hover {
 						'type' => 'input',
 						'col' => 2 ,
 						'properties' => array(
-							'label' => 'estacion ',
+							'label' => 'Estaci&oacute;n ',
 							'id' => 'estacion',
 							'attr' => array("required maxlength='10'")
                         )
@@ -235,7 +156,7 @@ input:required:invalid:hover {
 						'type' => 'input',
 						'col' => 2 ,
 						'properties' => array(
-							'label' => 'serie ',
+							'label' => 'Serie ',
 							'id' => 'serie',
 							'attr' => array("required maxlength='10'")
                         )
@@ -246,8 +167,8 @@ input:required:invalid:hover {
 
 
 				$form = $_ui->create_smartform($fields);
-				$form->fieldset(0, array('estacion','sello','serie'));
-				$form->fieldset(1, array('referencia','litros_esp','costo_esp'));
+				$form->fieldset(0, array('descargas','fecha','hora','estacion','serie'));
+				$form->fieldset(1, array('referencia','sello','litros_esp','costo_esp'));
 
 
 
@@ -263,18 +184,14 @@ input:required:invalid:hover {
 	<table id='tlsTable' width='100%'>
 <thead>
 	
-					<th>Id</th>
-					<th>Estacion</th>
-				<th>Tanque</th>
-				<th>Fecha Hora</th>
-				<th>Producto</th>
-				<th>Volumen Recepcion</th>
-				<th></th>
+        <th>RUI</th>
+        <th>Fecha</th>
+        <th>Vol. Ini.</th>
+        <th>Vol. Fin</th>
+        <th>Volumen Recepcion</th>
+        <th></th>
 </thead>
 	</table>
-	<span class='btn' id='quitar'><i class='fa fa-trash'></i> Eliminar seleccionados</span>
-	<span class='btn' id='rgalones'><i class='fa fa-money'></i> Completar Precio Galones</span>
-							<br>
 						
 							
 
@@ -350,7 +267,16 @@ loadScript("js/plugin/jqgrid/grid.locale-en.min.js");
 	validar();
     });
 
-		
+        // $('#hora').timepicker({
+        //     format: 'hh:mm'
+        // });
+        
+		$('#fecha').datepicker({
+	dateFormat: 'dd/mm/yy',
+	prevText: '<i class="fa fa-chevron-left"></i>',
+	nextText: '<i class="fa fa-chevron-right"></i>'
+
+});
 });
 
 
@@ -368,15 +294,7 @@ $('#remoteModal').on('show.bs.modal', function (e) {
 
 
 function alertaValidacion(mensaje)
-{
-		$.smallBox({
-			title : "Alerta de validacion",
-			content : "<i class='fa fa-clock-o'></i> <i>"+ mensaje +"</i>",
-			color : "#C46A69",
-			iconSmall : "fa fa-times fa-2x fadeInRight animated",
-			timeout : 4000
-		});
-
+{alert(mensaje)
 }
 function alertaInfo(mensaje)
 {
@@ -391,105 +309,81 @@ function alertaInfo(mensaje)
 }
 function validar()
 {
-			volumen1 = 0;
-			for (var i = 0; i < tlsObj.length; i++){
-  // look for the entry with a matching `code` value
-			 volumen1 = parseFloat(volumen1) + parseFloat(tlsObj[i].tls.replace(/,/g, ''));
-			}
-if($('#temperatura').val() <= -30 || $('#temperatura').val() >= 104 )
-{
-alertaValidacion('La temperatura especificada es incorrecta');
-return false;
-}
-if($('#temperaturaEntrada').val() <= -30 || $('#temperaturaEntrada').val() >= 104 )
-{
-alertaValidacion('La temperatura de entrada especificada es incorrecta');
-return false;
-}
-$('#descargas').val(btoa(JSON.stringify(tlsObj)));
-// importes
-		
-
-
-	if($('#folioRemision').val() =="")
-	{
-		alertaValidacion('Especifica el folio de la remision');
-		return false;
-	}
-
-	if(isNaN($('#volumenRemision').val()) || $('#volumenRemision').val() <= 0 )
-	{
-		alertaValidacion('Especifica el volumen de la remision');
-		return false;
-	}
-
-	if($('#chofer').val() =="")
-	{
-		alertaValidacion('Especifica el nombre del chofer');
-		return false;
-	}
-	if($('#persona').val() =="")
-	{
-		alertaValidacion('Especifica el nombre quien descarga');
-		return false;
-	}
+        if($('#estacion').val() =="")
+		{
+			alertaValidacion('Especifica la estacion');
+            $('#estacion').select();
+			return false;
+		}
+        if($('#sello').val() =="")
+		{
+			alertaValidacion('Especifica el sello');
+            $('#sello').select();
+			return false;
+		}
+        if($('#serie').val() =="")
+		{
+			alertaValidacion('Especifica la serie');
+            $('#serie').select();
+			return false;
+		}
+        if($('#referencia').val() =="")
+		{
+			alertaValidacion('Especifica la referencia');
+            $('#referencia').select();
+			return false;
+		}
+        if($('#litros_esp').val() =="" ||  $('#litros_esp').val() ==0 || isNaN($('#litros_esp').val()) )
+		{
+			alertaValidacion('Valor incorrecto para litros esperados');
+            $('#litros_esp').select();
+			return false;
+		}
+        if($('#costo_esp').val() =="" ||  $('#costo_esp').val() ==0 || isNaN($('#costo_esp').val()) )
+		{
+			alertaValidacion('Valor incorrecto para costo esperado');
+            $('#costo_esp').select();
+			return false;
+		}
+    $('#descargas').val(btoa(JSON.stringify(tlsObj)));
+    
 		if($('#descargas').val().length < 10)
 	{
 		alertaValidacion('Selecciona por lo menus un TLS');
 		return false;
 	}
-		mensajeC ="Esta usted seguro de guardar los cambios realizados? <br>"
-		mensajeC = mensajeC + " Proveedor : Novum <br>";
-		mensajeC = mensajeC + " Folio Remision : " + $('#folioRemision').val() + " <br>";
-		mensajeC = mensajeC + " Volumen Remision : " + $('#volumenRemision').val() + " <br>";
-		mensajeC = mensajeC + " Volumen TLS: " + volumen1 + " <br>";
 
-}
-
-
-				$.SmartMessageBox({
-					title : "Confirmaci&oacute;n",
-					content : mensajeC,
-					buttons : '[No][Si]'
-				}, function(ButtonPressed) {
-					if (ButtonPressed === "Si") {
-						$.post("ajax/documentos/documento.php?id=<?php echo $id?>",
+if(confirm("Esta usted seguro de guardar la recepcion ?"))
+{
+						$.post("ajax/recepcionesadd.php",
 							$('.smart-form').serialize(),
 							function(data,status){
 								$('#resultado').html(data);
 							}
 						);					}
-					else
-					{
-						return false;
-					}
-				});
-
-
+}
 
 // seleccionar tls
 // if(hr == 'undefined')	{
 // 	hideRemisiones();
 // alert(hr);
 // }
-var tlsObj = {};
+var tlsObj = [];
 function showTls(){
 if ( $.fn.dataTable.isDataTable( '#tlsTable' ) ) {
     tablaTls = $('#tlsTable').DataTable();
 }
 else {
 
-
 tablaTLS = $('#tlsTable').DataTable({
 	"aaData":tlsObj,
 			bFilter : false,
              columns: [	
             { data: "id" },
-            { data: "estacion" },
-            { data: "tanque"},
-            { data: "fecha"},
-            { data: "producto" },
-            { data: "tls", className: "text-right editar"  },
+            { data: "fecha" },
+            { data: "volini"},
+            { data: "volfin"},
+            { data: "volumen" },
             {
                 data: null,
                 className: "center",
@@ -506,9 +400,9 @@ tablaTLS = $('#tlsTable').DataTable({
 });
 }
 }
+
 function hideTls(){
 	tablaTLS.destroy();
-
 }
 function quitaTls(obj)
 {
@@ -552,6 +446,9 @@ $(document).ready(function(){
 
 				$(".ui-icon.ui-icon-seek-end").wrap("<div class='btn btn-sm btn-default'></div>");
 				$(".ui-icon.ui-icon-seek-end").removeClass().addClass("fa fa-fast-forward");
+                
+                setTimeout("showTls();",1000);
+
 
 })
 

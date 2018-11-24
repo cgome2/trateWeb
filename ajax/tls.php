@@ -20,39 +20,33 @@ echo "<table class='table table-bordered'>
 								<thead>
 									<tr>
 										<th></th>
-										<th>Estacion</th>
-										<th>Tanque</th>
-										<th>Fecha Hora</th>
-										<th>Producto</th>
+										<th>RUI</th>
+										<th>Fecha</th>
+										<th>Vol. Ini.</th>
+										<th>Vol Fin</th>
 										<th>Volumen Recepcion</th>
 									</tr>
 								</thead>
                                 <tbody>";
     foreach($datos as $rs)
     {
+
         $checked ="";
         $disabled ="";
         $clase = "tls ck";
-        $id = $rs->iddescargas;
-        $documento = $rs->iddocumentos;
+        $id = $rs->reception_unique_id;
         if(in_array($id,$descargas)) $checked=" checked='checked'";
-        if(($documento !="") && $documento != $idRecord) 
-            {
-                $checked=" disabled='disabled'  checked='checked'";
-                $clase="notls ck";
-            }
-        $tanque = $rs->tanque;
-        $fecha = fechahoramex($rs->fecha);
-        $producto = $rs->producto;
-        $estacion = $rs->estacion;
-        $volumen = decimales2($rs->tls);
+        $fecha = fechahoramex($rs->end_delivery_timestamp);
+        $volini = $rs->start_volume;
+        $volfin = $rs->end_volume;
+        $volumen = $volfin-$volini;
         echo "
             <tr>
-                <td><input type='checkbox' $checked class='$clase' name='iddescargas[]' id='d$id' value='$id' data-estacion='$estacion' data-tanque='$tanque' data-fecha='$fecha' data-producto='$producto' data-tls='$volumen'></td>
-                <td>$estacion</td>
-                <td>$tanque</td>
+                <td><input type='checkbox' $checked class='$clase' name='iddescargas[]' id='d$id' value='$id'  data-fecha='$fecha' data-volini='$volini' data-volfin='$volfin' data-volumen='$volumen'></td>
+                <td>$id</td>
                 <td>$fecha</td>
-                <td>$producto</td>
+                <td>$volini</td>
+                <td>$volfin</td>
                 <td>$volumen</td>
             </tr>
         ";
@@ -72,7 +66,7 @@ tlsObj = [];
     var checkedVals = $('.tls:checkbox:checked').map(function() {
     idcheck = this.id;
 
-        dato  ={"id":$('#'+idcheck).val(),"estacion":$('#'+idcheck).attr('data-estacion'),"tanque": $('#'+idcheck).attr('data-tanque'),"fecha":$('#'+idcheck).attr('data-fecha'),"producto":$('#'+idcheck).attr('data-producto'),"tls":$('#'+idcheck).attr('data-tls')};
+        dato  ={"id":$('#'+idcheck).val(),"volini": $('#'+idcheck).attr('data-volini'),"fecha":$('#'+idcheck).attr('data-fecha'),"volfin":$('#'+idcheck).attr('data-volfin'),"volumen":$('#'+idcheck).attr('data-volumen')};
     tlsObj.push(dato);
     e++;
 

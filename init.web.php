@@ -81,5 +81,5 @@ Pases
 $page_title = "Siteomat 6";
 $page_css = array();
 $no_main_header = false; //set true for lock.php and login.php
-$page_body_prop = array("class"=>"smart-style-1 fixed-navigation fixed-header"); //optional properties for <body>
+$page_body_prop = array("class"=>""); //optional properties for <body>
 $page_html_prop = array(); //optional properties for <html>
