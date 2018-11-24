@@ -27,16 +27,59 @@ ex:
 */
 $page_nav = array(
     "blank" => array(
-        "title" => "Blank",
+        "title" => "Home",
         "icon" => "fa-home",
         "url" => "ajax/dashboard.php"
+    ),
+    "cortes" => array(
+    "title" => "Cortes",
+    "icon" => "fa-list",
+    "url" => "ajax/cortes.php"
+    ),
+    "recepciones" => array(
+    "title" => "Recepciones",
+    "icon" => "fa-arrow-circle-down",
+    "url" => "ajax/recepciones.php"
+    ),
+    "contingencias" => array(
+    "title" => "Contingencias",
+    "icon" => "fa-life-saver",
+    "url" => "ajax/contingencias.php"
+    ),
+    "vehiculos" => array(
+    "title" => "Vehiculos",
+    "icon" => "fa-car",
+    "url" => "ajax/vehiculos.php"
+    ),
+    "pases" => array(
+    "title" => "Pases",
+    "icon" => "fa-ticket",
+    "url" => "ajax/pases.php"
+    )
+    ,
+    "usuarios" => array(
+    "title" => "Usuarios",
+    "icon" => "fa-user",
+    "url" => "ajax/usuarios.php"
+    )
+    ,
+    "salir" => array(
+    "title" => "Salir",
+    "icon" => "fa-sign-out",
+    "url" => "ajax/logout.php"
     )
 );
+/*
+Cortes
+Recepciones
+Contingencias
+Vehiculos
+Pases
+*/
 
 //configuration variables
-$page_title = "";
+$page_title = "Siteomat 6";
 $page_css = array();
 $no_main_header = false; //set true for lock.php and login.php
-$page_body_prop = array(); //optional properties for <body>
+$page_body_prop = array("class"=>"smart-style-1 fixed-navigation fixed-header"); //optional properties for <body>
 $page_html_prop = array(); //optional properties for <html>
-?>

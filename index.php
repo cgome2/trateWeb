@@ -1,5 +1,11 @@
 <?php
+session_start();
+if(!isset($_SESSION['loginSite']))
+{
 
+include "login.php";
+exit;	
+}
 //initilize the page
 require_once 'init.web.php';
 

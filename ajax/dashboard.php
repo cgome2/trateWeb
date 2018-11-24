@@ -8,9 +8,9 @@
 
 			<!-- PAGE HEADER -->
 			<i class="fa-fw fa fa-home"></i>
-				Page Header test
+				Home
 			<span>>
-				Subtitle
+				Dashboard
 			</span>
 		</h1>
 	</div>
@@ -25,7 +25,7 @@
 	<!-- a blank row to get started -->
 	<div class="col-sm-12">
 		<!-- your contents here -->
-		Your content here...
+		Seleccione una opci&oacute;n del men&uacute;
 	</div>
 
 </div>
