@@ -785,7 +785,7 @@ var calc_navbar_height = function() {
 	
 		/*
 		 * JQUERY UI DATE
-		 * Dependency: js/libs/jquery-ui.min.js
+		 * Dependency: js/libs/jquery-ui-1.10.3.min.js
 		 * Usage: <input class="datepicker" />
 		 */
 		if ($.fn.datepicker) {

@@ -1,4 +1,5 @@
 <?php
+set_time_limit(60);
 require_once $_SERVER['DOCUMENT_ROOT'].'/init.php';
 
 use \SmartUI\UI;
@@ -19,17 +20,24 @@ if ($_SERVER['REQUEST_METHOD'] =="POST")
 #    $_ui->print_alert("<strong>Excepcion de Mysql :</strong> $r", 'danger');
 $fecha = fechaest($_POST['fecha']);
 $fecha = date('d/m/y',strtotime($fecha));
-$hora = substr($_POST['hora'],0,5);
 $serie = $_POST['serie'];
 $sello = $_POST['sello'];
 $referencia = $_POST['referencia'];
-$cmd = "/usr/local/orpak/perl/Trate/bin/valida_factura_trate.pl $fecha  $referencia $serie";
-$response = shell_exec($cmd);
-$_ui->print_alert($cmd .':<br>' . $response, 'success');
+$cmd = "perl /usr/local/orpak/perl/Trate/bin/valida_factura_trate.pl $fecha  $referencia $serie";
+$response =  1;//shell_exec($cmd);
+if($response =="0")
+{
+$_ui->print_alert('Alerta:<br> El master no encontro la factura buscada' ,'warning');
+}
+else
+{
+    $_ui->print_alert( 'Exito :<br> Datos guardados, espere..', 'success');
 
+}
 // Y-m-d H:m
 // FECHA referencia serie
 exit;
+
 
 }
 $_ui->start_track();
@@ -94,18 +102,6 @@ input:required:invalid:hover {
 
 						)
 					),
-					'hora' => array(
-						'type' => 'input', // or FormField::FORM_FIELD_INPUT
-						'col' => 3,
-						'properties' => array(
-							'id' => 'hora',
-							'label' => 'Hora Documento',
-							'icon' => 'fa-clock-o',
-							'icon_append' => true,
-                            'value' => date('H:i:s'),
-                            'type'=>'time'
-						)
-					),
 
 					'costo_esp' => array(
 						'type' => 'input',
@@ -167,7 +163,7 @@ input:required:invalid:hover {
 
 
 				$form = $_ui->create_smartform($fields);
-				$form->fieldset(0, array('descargas','fecha','hora','estacion','serie'));
+				$form->fieldset(0, array('descargas','fecha','estacion','serie'));
 				$form->fieldset(1, array('referencia','sello','litros_esp','costo_esp'));
 
 

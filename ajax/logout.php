@@ -3,7 +3,17 @@
 	// pagefunction
 
 	var pagefunction = function() {
-       window.location.href='login.php';
+	$.smallBox({
+		title : "Cerrando sesion",
+		content : "Gracias por utilizar SiteOmat 6",
+		color : "#5384AF",
+		timeout:800,
+		icon : "fa fa-bell"
+	});
+	setTimeout(function(){window.location.href='login.php'},1800);
+
+		
+
 	// end pagefunction
 }
 	// run pagefunction

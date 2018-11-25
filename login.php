@@ -150,7 +150,7 @@ include("inc/header.php");
 </script>
 
 <?php 
-if($notok)
+if(isset($notok))
 {
 	?>
 <script>
@@ -159,8 +159,8 @@ $( document ).ready(function() {
 $.smallBox({
                         title : "Datos Incorrectos",
                         content : " Revise sus credenciales",
-                        color : "#659265",
-                        iconSmall : "fa fa-check fa-2x fadeInRight animated",
+                        color : "orange",
+                        iconSmall : "fa fa-warning fa-2x fadeInRight animated",
                         timeout : 4000
                     });
 
@@ -169,5 +169,5 @@ $.smallBox({
 	<?php
 }
 	//include footer
-	include("inc/google-analytics.php"); 
+	// include("inc/google-analytics.php"); 
 ?>
