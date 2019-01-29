@@ -786,17 +786,15 @@ MIT
 
 @angular/material/icon
 
-@angular/material/sidenav
-
 @angular/material/toolbar
-
-@angular/material/button
 
 @angular/material/divider
 
 @angular/material/menu
 
 @angular/material/dialog
+
+@angular/material/button
 
 @angular/material/datepicker
 
