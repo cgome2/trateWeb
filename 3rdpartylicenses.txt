@@ -813,8 +813,6 @@ MIT
 
 @angular/material/toolbar
 
-@angular/material/divider
-
 @angular/material/menu
 
 @angular/material/dialog
